@@ -46,52 +46,10 @@ typedef struct {
 } GameInfo_t;
 
 // tetromino figure //
-int tetrominos[TETROMINO_COUNT][BLOCK_SIZE][BLOCK_SIZE] = {
-    {{0, 0, 0, 0, 0},
-     {0, 1, 0, 0, 0},
-     {0, 1, 1, 1, 0},
-     {0, 0, 0, 0, 0},
-     {0, 0, 0, 0, 0}},
-
-    {{0, 0, 0, 0, 0},
-     {0, 0, 0, 1, 0},
-     {0, 1, 1, 1, 0},
-     {0, 0, 0, 0, 0},
-     {0, 0, 0, 0, 0}},
-
-    {{0, 0, 0, 0, 0},
-     {0, 0, 1, 0, 0},
-     {0, 1, 1, 1, 0},
-     {0, 0, 0, 0, 0},
-     {0, 0, 0, 0, 0}},
-
-    {{0, 0, 0, 0, 0},
-     {0, 0, 1, 1, 0},
-     {0, 0, 1, 1, 0},
-     {0, 0, 0, 0, 0},
-     {0, 0, 0, 0, 0}},
-
-    {{0, 0, 0, 0, 0},
-     {0, 0, 1, 1, 0},
-     {0, 1, 1, 0, 0},
-     {0, 0, 0, 0, 0},
-     {0, 0, 0, 0, 0}},
-
-    {{0, 0, 0, 0, 0},
-     {0, 1, 1, 0, 0},
-     {0, 0, 1, 1, 0},
-     {0, 0, 0, 0, 0},
-     {0, 0, 0, 0, 0}},
-
-    {{0, 0, 1, 0, 0},
-     {0, 0, 1, 0, 0},
-     {0, 0, 1, 0, 0},
-     {0, 0, 1, 0, 0},
-     {0, 0, 0, 0, 0}},
-};
+extern int tetrominos[TETROMINO_COUNT][BLOCK_SIZE][BLOCK_SIZE];
 
 void user_input(GameInfo_t *gameInfo, int hold);
-void choice_tetramino(GameInfo_t *gameInfo);
+void choice_tetromino(GameInfo_t *gameInfo);
 
 // function for put and clear tetromino in field //
 void put_block(GameInfo_t *gameInfo);
@@ -104,7 +62,7 @@ void move_left(GameInfo_t *gameInfo);
 void move_right(GameInfo_t *gameInfo);
 
 // rotate //
-void rotate_termino(GameInfo_t *gameInfo);
+void rotate_tetromino(GameInfo_t *gameInfo);
 int allow_rotate(GameInfo_t *gameInfo, int tmp[BLOCK_SIZE][BLOCK_SIZE]);
 
 int update_block_col_left(int bad[BLOCK_SIZE][BLOCK_SIZE]);
@@ -121,7 +79,8 @@ void find_full_lines(GameInfo_t *gameInfo, int *num);
 void update_score(GameInfo_t *game, int count);
 void update_speed(GameInfo_t *game, int **speed);
 
-GameInfo_t init_game();
+GameInfo_t *init_game();
+void free_gameinfo(GameInfo_t *game);
 GameInfo_t update_current_state(GameInfo_t *gameInfo, int *move_interval);
 
 #endif

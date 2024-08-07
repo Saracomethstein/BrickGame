@@ -25,8 +25,31 @@ GameInfo_t *init_game() {
   gameInfo->high_score = 0;  // get record from db //
 
   // func for getting random figure //
-  choice_tetramino(gameInfo)
-};
+  choice_tetromino(gameInfo);
+  return gameInfo;
+}
+
+void free_gameinfo(GameInfo_t *gameInfo) {
+  if (gameInfo) {
+    if (gameInfo->field) {
+      for (int row = 0; row < HEIGHT; row++) {
+        if (gameInfo->field[row]) {
+          free(gameInfo->field[row]);
+        }
+      }
+      free(gameInfo->field);
+    }
+    if (gameInfo->next) {
+      for (int row = 0; row < BLOCK_SIZE; row++) {
+        if (gameInfo->next[row]) {
+          free(gameInfo->next[row]);
+        }
+      }
+      free(gameInfo->next);
+    }
+    free(gameInfo);
+  }
+}
 
 void choice_tetromino(GameInfo_t *gameInfo) {
   int next_id = rand() % 7;
@@ -34,8 +57,8 @@ void choice_tetromino(GameInfo_t *gameInfo) {
   int flag = 0;
 
   // check next tetramino, if free -> flag = 0 //
-  for (i = 0; i < BLOCK_SIZE; i++) {
-    for (j = 0; j < BLOCK_SIZE; j++) {
+  for (int i = 0; i < BLOCK_SIZE; i++) {
+    for (int j = 0; j < BLOCK_SIZE; j++) {
       if (gameInfo->next[i][j] != 0) {
         flag = 1;
         break;
@@ -153,8 +176,8 @@ void move_right(GameInfo_t *gameInfo) {
   gameInfo->block_col++;
 }
 
-// rotation termino //
-void rotate_termino(GameInfo_t *gameInfo) {
+// rotation teromino //
+void rotate_tetromino(GameInfo_t *gameInfo) {
   int tmp[BLOCK_SIZE][BLOCK_SIZE];
 
   // copy termino //
@@ -214,7 +237,7 @@ int update_block_col_left(int bad[BLOCK_SIZE][BLOCK_SIZE]) {
 
   for (int i = 0; i < BLOCK_SIZE; i++) {
     for (int j = 0; j < BLOCK_SIZE; j++) {
-      if (bad[i][j] == 1 && j < pos && < j < tmp) {
+      if (bad[i][j] == 1 && j < pos && j < tmp) {
         tmp = j;
       }
     }
@@ -255,7 +278,7 @@ void freeze_block(GameInfo_t *gameInfo) {
     for (int j = 0; j < WIDTH; ++j) {
       if (gameInfo->field[i][j] == 1) {
         // 2 - freeze pixel //
-        gameInfo->field[i][j] = 2
+        gameInfo->field[i][j] = 2;
       }
     }
   }
@@ -273,7 +296,7 @@ void find_full_lines(GameInfo_t *gameInfo, int *num) {
 
     if (count == WIDTH) {
       *num += 1;
-      clear_lines(game, i);
+      clear_lines(gameInfo, i);
       find_full_lines(gameInfo, num);
     }
   }
@@ -358,7 +381,7 @@ void user_input(GameInfo_t *gameInfo, int hold) {
   switch (hold) {
     case ' ':
       gameInfo->status = Rotation;
-      rotate_termino(gameInfo);
+      rotate_tetromino(gameInfo);
       break;
 
     case KEY_DOWN:
@@ -395,3 +418,47 @@ void user_input(GameInfo_t *gameInfo, int hold) {
       break;
   }
 }
+
+int tetrominos[TETROMINO_COUNT][BLOCK_SIZE][BLOCK_SIZE] = {
+    {{0, 0, 0, 0, 0},
+     {0, 1, 0, 0, 0},
+     {0, 1, 1, 1, 0},
+     {0, 0, 0, 0, 0},
+     {0, 0, 0, 0, 0}},
+
+    {{0, 0, 0, 0, 0},
+     {0, 0, 0, 1, 0},
+     {0, 1, 1, 1, 0},
+     {0, 0, 0, 0, 0},
+     {0, 0, 0, 0, 0}},
+
+    {{0, 0, 0, 0, 0},
+     {0, 0, 1, 0, 0},
+     {0, 1, 1, 1, 0},
+     {0, 0, 0, 0, 0},
+     {0, 0, 0, 0, 0}},
+
+    {{0, 0, 0, 0, 0},
+     {0, 0, 1, 1, 0},
+     {0, 0, 1, 1, 0},
+     {0, 0, 0, 0, 0},
+     {0, 0, 0, 0, 0}},
+
+    {{0, 0, 0, 0, 0},
+     {0, 0, 1, 1, 0},
+     {0, 1, 1, 0, 0},
+     {0, 0, 0, 0, 0},
+     {0, 0, 0, 0, 0}},
+
+    {{0, 0, 0, 0, 0},
+     {0, 1, 1, 0, 0},
+     {0, 0, 1, 1, 0},
+     {0, 0, 0, 0, 0},
+     {0, 0, 0, 0, 0}},
+
+    {{0, 0, 1, 0, 0},
+     {0, 0, 1, 0, 0},
+     {0, 0, 1, 0, 0},
+     {0, 0, 1, 0, 0},
+     {0, 0, 0, 0, 0}},
+};
