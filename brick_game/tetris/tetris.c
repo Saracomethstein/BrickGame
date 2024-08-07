@@ -64,3 +64,25 @@ void choice_tetromino(GameInfo_t *gameInfo) {
     }
   }
 }
+
+// put a block on the field //
+void put_block(GameInfo_t *gameInfo) {
+  for (int i = 0; i < BLOCK_SIZE; i++) {
+    for (int j = 0; j < BLOCK_SIZE; j++) {
+      if (gameInfo->block[i][j] == 1) {
+        gameInfo->field[gameInfo->block_row + i][gameInfo->block_col + j] = 1;
+      }
+    }
+  }
+}
+
+// clear block on the field //
+void clear_block(GameInfo_t *gameInfo) {
+  for (int i = 0; i < BLOCK_SIZE; i++) {
+    for (int j = 0; j < BLOCK_SIZE; j++) {
+      if (gameInfo->block[i][j] == 1) {
+        gameInfo->field[gameInfo->block_row + i][gameInfo->block_col + j] = 0;
+      }
+    }
+  }
+}

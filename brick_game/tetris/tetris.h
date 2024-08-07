@@ -32,6 +32,8 @@ typedef struct {
   int **field;
   int **next;
   int **block;
+  int block_row;
+  int block_col;
   int score;
   int high_score;
   int level;
@@ -87,6 +89,8 @@ int tetrominos[TETROMINO_COUNT][BLOCK_SIZE][BLOCK_SIZE] = {
 
 void user_input(UserAction_t action, bool hold);
 void choice_tetramino(GameInfo_t *gameInfo);
+void put_block(GameInfo_t *gameInfo);
+void clear_block(GameInfo_t *gameInfo);
 
 GameInfo_t init_game();
 GameInfo_t update_current_state();
