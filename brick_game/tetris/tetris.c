@@ -86,3 +86,69 @@ void clear_block(GameInfo_t *gameInfo) {
     }
   }
 }
+
+void move_down(GameInfo_t *gameInfo) {
+  for (int i = 0; i < BLOCK_SIZE; i++) {
+    for (int j = 0; j < BLOCK_SIZE; j++) {
+      if (gameInfo->block[i][j] == 1) {
+        int new_row = gameInfo->block_row + i + 1;
+        int new_col = gameInfo->block_col + j;
+
+        if (new_row > HEIGHT - 1 || gameInfo->field[new_row][new_col] == 2) {
+          gameInfo->status = Sig;
+          return;
+        }
+      }
+    }
+  }
+
+  clear_block(gameInfo);
+  put_block(gameInfo);
+  gameInfo->block_row++;
+}
+
+void move_left(GameInfo_t *gameInfo) {
+  for (int i = 0; i < HEIGHT; i++) {
+    if (gameInfo->field[i][0] == 1) {
+      return;
+    }
+  }
+
+  for (int i = 0; i < BLOCK_SIZE; i++) {
+    for (int j = 0; j < BLOCK_SIZE; j++) {
+      if (gameInfo->block[i][j] == 1) {
+        if (gameInfo->field[gameInfo->block_row + i]
+                           [gameInfo->block_col + j - 1] == 2) {
+          return;
+        }
+      }
+    }
+  }
+
+  clear_block(gameInfo);
+  put_block(gameInfo);
+  gameInfo->block_col--;
+}
+
+void move_right(GameInfo_t *gameInfo) {
+  for (int i = 0; i < HEIGHT; i++) {
+    if (gameInfo->field[i][WIDTH - 1] == 1) {
+      return;
+    }
+  }
+
+  for (int i = 0; i < BLOCK_SIZE; i++) {
+    for (int j = 0; j < BLOCK_SIZE; j++) {
+      if (gameInfo->block[i][j] == 1) {
+        if (gameInfo->field[gameInfo->block_row + i]
+                           [gameInfo->block_col + j + 1] == 2) {
+          return;
+        }
+      }
+    }
+  }
+
+  clear_block(gameInfo);
+  put_block(gameInfo);
+  gameInfo->block_col++;
+}

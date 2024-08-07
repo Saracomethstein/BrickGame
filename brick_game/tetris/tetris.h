@@ -18,7 +18,8 @@ typedef enum {
   Right,
   Up,
   Down,
-  Action
+  Action,
+  Sig,
 } UserAction_t;
 
 typedef struct {
@@ -89,8 +90,15 @@ int tetrominos[TETROMINO_COUNT][BLOCK_SIZE][BLOCK_SIZE] = {
 
 void user_input(UserAction_t action, bool hold);
 void choice_tetramino(GameInfo_t *gameInfo);
+
+// function for put and clear tetromino in field //
 void put_block(GameInfo_t *gameInfo);
 void clear_block(GameInfo_t *gameInfo);
+
+// move function for block //
+void move_down(GameInfo_t *gameInfo);
+void move_left(GameInfo_t *gameInfo);
+void move_right(GameInfo_t *gameInfo);
 
 GameInfo_t init_game();
 GameInfo_t update_current_state();
