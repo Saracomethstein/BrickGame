@@ -19,6 +19,7 @@ typedef enum {
   Right,
   Up,
   Down,
+  Rotation,
   Action,
   Sig,
 } UserAction_t;

@@ -332,24 +332,66 @@ void check_finish(GameInfo_t *gameInfo) {
 }
 
 GameInfo_t update_current_state(GameInfo_t *gameInfo, int *move_interval) {
-    int count = 0;
+  int count = 0;
 
-    freeze_block(gameInfo);
-    find_full_lines(gameInfo, &count);
+  freeze_block(gameInfo);
+  find_full_lines(gameInfo, &count);
 
-    if (count > 0) {
-        update_score(gameInfo, count);
-        update_speed(gameInfo, &move_interval);
-    }
+  if (count > 0) {
+    update_score(gameInfo, count);
+    update_speed(gameInfo, &move_interval);
+  }
 
-    check_finish(gameInfo);
+  check_finish(gameInfo);
 
-    if (gameInfo->status != GameOver) {
-        gameInfo->block_row = 0;
-        gameInfo->block_col = 2;
+  if (gameInfo->status != GameOver) {
+    gameInfo->block_row = 0;
+    gameInfo->block_col = 2;
+    gameInfo->status = Down;
+    choice_tetromino(gameInfo);
+    put_block(gameInfo);
+  }
+  return *gameInfo;
+}
+
+void user_input(GameInfo_t *gameInfo, int hold) {
+  switch (hold) {
+    case ' ':
+      gameInfo->status = Rotation;
+      rotate_termino(gameInfo);
+      break;
+
+    case KEY_DOWN:
+      gameInfo->status = Down;
+      move_down(gameInfo);
+      break;
+
+    case KEY_LEFT:
+      gameInfo->status = Left;
+      move_left(gameInfo);
+      break;
+
+    case KEY_RIGHT:
+      gameInfo->status = Right;
+      move_right(gameInfo);
+      break;
+
+    case 'q':
+      gameInfo->status = Terminate;
+      break;
+
+    case 'p':
+      if (gameInfo->status == Pause) {
+        gameInfo->status = Sig;
+      } else if (gameInfo->status != GameOver) {
+        gameInfo->status = Pause;
+      }
+      break;
+
+    default:
+      if (gameInfo->status != GameOver && gameInfo->status != Start) {
         gameInfo->status = Down;
-        choice_tetromino(gameInfo);
-        put_block(gameInfo);
-    }
-    return *gameInfo;
+      }
+      break;
+  }
 }
