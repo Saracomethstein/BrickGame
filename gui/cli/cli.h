@@ -28,7 +28,7 @@ void draw_next(GameInfo_t *game, WINDOW *next);
 void draw_gameover(WinStruct *window);
 void draw_frontend(GameInfo_t *game, WinStruct *window);
 void draw_pause(WinStruct *window);
-int random_color();
+void draw_pause(WinStruct *window);
 WinStruct *init_windows();
 
 #endif

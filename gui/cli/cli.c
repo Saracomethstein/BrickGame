@@ -12,9 +12,9 @@ void init_curses() {
   init_pair(1, COLOR_BLACK, COLOR_WHITE);
   init_pair(2, COLOR_RED, COLOR_GREEN);
   init_pair(3, COLOR_RED, COLOR_BLUE);
-  init_pair(4, COLOR_WHITE, COLOR_BLACK);  // For help and border
+  init_pair(4, COLOR_WHITE, COLOR_BLACK);
   init_pair(5, COLOR_BLACK, COLOR_WHITE);
-  init_pair(6, COLOR_YELLOW, COLOR_BLACK);  // Score and Level
+  init_pair(6, COLOR_YELLOW, COLOR_BLACK);
 }
 
 WinStruct *init_windows() {
@@ -89,9 +89,23 @@ void draw_help(WINDOW *help) {
   wrefresh(help);
 }
 
+void draw_pause(WinStruct *window) {
+    wbkgdset(window->field, COLOR_PAIR(4));
+    mvwprintw(window->field, 10, 8, "PAUSE");
+    wrefresh(window->field);
+    nodelay(stdscr, FALSE);
+    getch();
+    nodelay(stdscr, TRUE);
+}
+
+// check game status for draw boards //
 void draw_frontend(GameInfo_t *game, WinStruct *window) {
   draw_board(game, window->field);
   draw_stats(game, window->stats);
   draw_next(game, window->next);
   draw_help(window->help);
+
+  if (game->status == Pause) {
+      draw_pause(window);
+  }
 }
