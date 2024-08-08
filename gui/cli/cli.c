@@ -15,6 +15,7 @@ void init_curses() {
   init_pair(4, COLOR_WHITE, COLOR_BLACK);
   init_pair(5, COLOR_BLACK, COLOR_WHITE);
   init_pair(6, COLOR_YELLOW, COLOR_BLACK);
+  init_pair(7, COLOR_RED, COLOR_BLACK);
 }
 
 WinStruct *init_windows() {
@@ -99,8 +100,8 @@ void draw_pause(WinStruct *window) {
 }
 
 void draw_game_over(WinStruct *window) {
-  wbkgdset(window->field, COLOR_PAIR(4));
-  mvwprintw(window->field, 10, 8, "GAME OVER");
+  wbkgdset(window->field, COLOR_PAIR(7));
+  mvwprintw(window->field, 10, 5, "GAME OVER");
   mvwprintw(window->field, 11, 1, "Press [r] to restart");
   wrefresh(window->field);
   nodelay(stdscr, false);
@@ -109,25 +110,22 @@ void draw_game_over(WinStruct *window) {
 }
 
 void draw_hello(WinStruct *window) {
-  wbkgdset(window->field, COLOR_PAIR(4));
-  mvwprintw(window->field, 10, 8, "Hello!");
-  mvwprintw(window->field, 11, 5, "Press any key");
-  mvwprintw(window->field, 12, 6, "to continue.");
+  mvwprintw(window->field, 10, 5, "Press any key");
+  mvwprintw(window->field, 11, 6, "to continue");
   wrefresh(window->field);
   nodelay(stdscr, false);
   getch();
-  nodelay(stdscr, false);
+  nodelay(stdscr, true);
 }
 
-// check game status for draw boards //
 void draw_frontend(GameInfo_t *game, WinStruct *window) {
   if (game->status == Start) {
     draw_board(game, window->field);
     draw_stats(game, window->stats);
     draw_next(game, window->next);
     draw_help(window->help);
-    mvwprintw(window->field, 11, 5, "Press any key");
-    mvwprintw(window->field, 12, 6, "to continue.");
+    mvwprintw(window->field, 10, 5, "Press any key");
+    mvwprintw(window->field, 11, 6, "to continue");
     wrefresh(window->field);
     int ch = getchar();
     (void)ch;
@@ -144,7 +142,7 @@ void draw_frontend(GameInfo_t *game, WinStruct *window) {
     draw_pause(window);
   } else if (game->status == GameOver) {
     draw_game_over(window);
-  } else if (game->status == Hello) {
-    draw_hello(window);
+  } else if (game->status == Restart) {
+    draw_board(game, window->field);
   }
 }

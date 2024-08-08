@@ -379,6 +379,9 @@ void user_input(GameInfo_t *game, int hold) {
       } else if (game->status != GameOver)
         game->status = Pause;
       break;
+    case 'r':
+      game->status = Restart;
+      break;
     default:
       if (game->status != GameOver && game->status != Start)
         game->status = Down;

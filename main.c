@@ -32,6 +32,8 @@ int main() {
         if (c == 'q') {
           game->status = Terminate;
           break;
+        } else if (c == 'r') {
+          game->status = Restart;
         }
       }
     }
