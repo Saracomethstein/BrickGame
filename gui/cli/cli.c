@@ -80,12 +80,12 @@ void draw_help(WINDOW *help) {
   werase(help);
   box(help, 0, 0);
   mvwprintw(help, 1, 1, "Help");
-  mvwprintw(help, 2, 1, "Left:      <-");
-  mvwprintw(help, 3, 1, "Right:     ->");
-  mvwprintw(help, 4, 1, "Down:      v");
-  mvwprintw(help, 5, 1, "Rotate:    space");
-  mvwprintw(help, 6, 1, "Quit:      q");
-  mvwprintw(help, 7, 1, "Pause:     p");  // dose not working //
+  mvwprintw(help, 2, 1, "Left:      [<]");
+  mvwprintw(help, 3, 1, "Right:     [>]");
+  mvwprintw(help, 4, 1, "Down:      [v]");
+  mvwprintw(help, 5, 1, "Rotate:    [space]");
+  mvwprintw(help, 6, 1, "Quit:      [q]");
+  mvwprintw(help, 7, 1, "Pause:     [p]");
   wrefresh(help);
 }
 
