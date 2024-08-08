@@ -2,39 +2,39 @@
 #define TETRIS_H
 
 #include <ncurses.h>
+#include <signal.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
-#define HEIGHT 20
 #define WIDTH 10
+#define HEIGHT 20
+#define TETRAMINO_COUNT 7
 #define BLOCK_SIZE 5
-#define TETROMINO_COUNT 7
+#define OKK 0
+#define COLLISION 1
+#define GAME_OVER 1
+
+extern const int tetromino[TETRAMINO_COUNT][BLOCK_SIZE][BLOCK_SIZE];
 
 typedef enum {
   Start,
   Pause,
-  GameOver,
   Terminate,
   Left,
   Right,
   Up,
   Down,
   Rotation,
-  Action,
   Sig,
+  GameOver,
 } UserAction_t;
-
-typedef struct {
-  int x;
-  int y;
-  int shape;
-  int rotation;
-} Tetromino;
 
 typedef struct {
   int **field;
   int **next;
-  int **block;
+  int block[BLOCK_SIZE][BLOCK_SIZE];
   int block_row;
   int block_col;
   int score;
@@ -45,42 +45,40 @@ typedef struct {
   int status;
 } GameInfo_t;
 
-// tetromino figure //
-extern int tetrominos[TETROMINO_COUNT][BLOCK_SIZE][BLOCK_SIZE];
-
 void user_input(GameInfo_t *gameInfo, int hold);
-void choice_tetromino(GameInfo_t *gameInfo);
+void choose_tetromino(GameInfo_t *gameInfo);
 
-// function for put and clear tetromino in field //
-void put_block(GameInfo_t *gameInfo);
-void clear_block(GameInfo_t *gameInfo);
-void clear_lines(GameInfo_t *game, int row_idx);
-
-// move function for block //
-void move_down(GameInfo_t *gameInfo);
+// move block //
 void move_left(GameInfo_t *gameInfo);
 void move_right(GameInfo_t *gameInfo);
+void move_down(GameInfo_t *gameInfo);
 
-// rotate //
-void rotate_tetromino(GameInfo_t *gameInfo);
-int allow_rotate(GameInfo_t *gameInfo, int tmp[BLOCK_SIZE][BLOCK_SIZE]);
-
-int update_block_col_left(int bad[BLOCK_SIZE][BLOCK_SIZE]);
-int update_block_col_right(int bad[BLOCK_SIZE][BLOCK_SIZE]);
-
-// check //
-int check_square(GameInfo_t *gameInfo);
-void check_finish(GameInfo_t *gameInfo);
-
+// block func //
+void clear_block(GameInfo_t *gameInfo);
+void place_block(GameInfo_t *gameInfo);
 void freeze_block(GameInfo_t *gameInfo);
+void clear_lines(GameInfo_t *gameInfo, int row_index);
 
-void find_full_lines(GameInfo_t *gameInfo, int *num);
+void update_score(GameInfo_t *gameInfo, int count);
+void update_speed(GameInfo_t *gameInfo, int **speed);
 
-void update_score(GameInfo_t *game, int count);
-void update_speed(GameInfo_t *game, int **speed);
+// SQLite (now .txt) //
+void load_record(GameInfo_t *gameInfo);
+void write_record(GameInfo_t *gameInfo);
+
+void free_game(GameInfo_t *gameInfo);
+void find_fulls(GameInfo_t *gameInfo, int *count);
+
+void check_finish(GameInfo_t *gameInfo);
+int check_square(GameInfo_t *gameInfo);
+
+// rotation //
+void rotate_figure(GameInfo_t *gameInfo);
+int up_block_col_left(int block[BLOCK_SIZE][BLOCK_SIZE]);
+int up_block_col_right(int block[BLOCK_SIZE][BLOCK_SIZE]);
+int allow_rotation(GameInfo_t *gameInfo, int block[BLOCK_SIZE][BLOCK_SIZE]);
 
 GameInfo_t *init_game();
-void free_gameinfo(GameInfo_t *game);
 GameInfo_t update_current_state(GameInfo_t *gameInfo, int *move_interval);
 
 #endif

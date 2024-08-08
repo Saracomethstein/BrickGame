@@ -1,303 +1,234 @@
 #include "tetris.h"
 
 GameInfo_t *init_game() {
-  // init field for game //
-  GameInfo_t *gameInfo = (GameInfo_t *)malloc(sizeof(GameInfo_t));
-  gameInfo->field = (int **)calloc(HEIGHT, sizeof(int *));
+  srand(time(NULL));
+  GameInfo_t *game = (GameInfo_t *)malloc(sizeof(GameInfo_t));
+
+  game->field = (int **)calloc(HEIGHT, sizeof(int *));
   for (int i = 0; i < HEIGHT; i++) {
-    gameInfo->field[i] = (int *)calloc(WIDTH, sizeof(int));
+    game->field[i] = (int *)calloc(WIDTH, sizeof(int));
   }
 
-  // init next figure field //
-  gameInfo->next = (int **)calloc(BLOCK_SIZE, sizeof(int *));
+  game->next = (int **)calloc(BLOCK_SIZE, sizeof(int *));
   for (int i = 0; i < BLOCK_SIZE; i++) {
-    gameInfo->next[i] = (int *)calloc(BLOCK_SIZE, sizeof(int));
+    game->next[i] = (int(*))calloc(BLOCK_SIZE, sizeof(int));
   }
 
-  // init default stat //
-  gameInfo->score = 0;
-  gameInfo->level = 0;
-  gameInfo->speed = 1;
-  gameInfo->pause = 0;
-  gameInfo->status = Start;
+  game->block_row = 0;
+  game->block_col = 2;
+  game->score = 0;
+  game->speed = 1;
+  game->status = Start;
 
-  // init record //
-  gameInfo->high_score = 0;  // get record from db //
+  choose_tetromino(game);
+  place_block(game);
+  load_record(game);
 
-  // func for getting random figure //
-  choice_tetromino(gameInfo);
-  return gameInfo;
+  return game;
 }
-
-void free_gameinfo(GameInfo_t *gameInfo) {
-  if (gameInfo) {
-    if (gameInfo->field) {
-      for (int row = 0; row < HEIGHT; row++) {
-        if (gameInfo->field[row]) {
-          free(gameInfo->field[row]);
-        }
-      }
-      free(gameInfo->field);
+void load_record(GameInfo_t *game) {
+  FILE *file = fopen("record.txt", "r");
+  if (file != NULL) {
+    int number;
+    if (fscanf(file, "%d", &number) == 1) {
+      game->high_score = number;
     }
-    if (gameInfo->next) {
-      for (int row = 0; row < BLOCK_SIZE; row++) {
-        if (gameInfo->next[row]) {
-          free(gameInfo->next[row]);
-        }
-      }
-      free(gameInfo->next);
-    }
-    free(gameInfo);
+    fclose(file);
   }
 }
 
-void choice_tetromino(GameInfo_t *gameInfo) {
-  int next_id = rand() % 7;
-  int block_id = rand() % 7;
+void write_record(GameInfo_t *game) {
+  FILE *file = fopen("record.txt", "w");
+  if (file != NULL) {
+    fprintf(file, "%d", game->high_score);
+  }
+  fclose(file);
+}
+
+void free_game(GameInfo_t *game) {
+  if (game) {
+    if (game->field) {
+      for (int i = 0; i < HEIGHT; i++) {
+        if (game->field[i]) {
+          free(game->field[i]);
+        }
+      }
+      free(game->field);
+    }
+    if (game->next) {
+      for (int i = 0; i < BLOCK_SIZE; i++) {
+        if (game->next[i]) {
+          free(game->next[i]);
+        }
+      }
+      free(game->next);
+    }
+    free(game);
+  }
+}
+
+void choose_tetromino(GameInfo_t *game) {
   int flag = 0;
 
-  // check next tetramino, if free -> flag = 0 //
+  // check zero block //
   for (int i = 0; i < BLOCK_SIZE; i++) {
     for (int j = 0; j < BLOCK_SIZE; j++) {
-      if (gameInfo->next[i][j] != 0) {
+      if (game->next[i][j] != 0) {
         flag = 1;
         break;
       }
     }
   }
 
+  // random tetromino //
+  int block_id = rand() % 7;
+  int next_id = rand() % 7;
+
   if (flag == 0) {
     for (int i = 0; i < BLOCK_SIZE; i++) {
       for (int j = 0; j < BLOCK_SIZE; j++) {
-        gameInfo->block[i][j] = tetrominos[block_id][i][j];
+        game->block[i][j] = tetromino[block_id][i][j];
       }
     }
   } else {
     for (int i = 0; i < BLOCK_SIZE; i++) {
       for (int j = 0; j < BLOCK_SIZE; j++) {
-        gameInfo->block[i][j] = gameInfo->next[i][j];
+        game->block[i][j] = game->next[i][j];
       }
     }
   }
-
-  // get next tetromino //
   for (int i = 0; i < BLOCK_SIZE; i++) {
     for (int j = 0; j < BLOCK_SIZE; j++) {
-      gameInfo->next[i][j] = tetrominos[next_id][i][j];
+      game->next[i][j] = tetromino[next_id][i][j];
     }
   }
 }
 
-// put a block on the field //
-void put_block(GameInfo_t *gameInfo) {
+void place_block(GameInfo_t *game) {
   for (int i = 0; i < BLOCK_SIZE; i++) {
     for (int j = 0; j < BLOCK_SIZE; j++) {
-      if (gameInfo->block[i][j] == 1) {
-        gameInfo->field[gameInfo->block_row + i][gameInfo->block_col + j] = 1;
-      }
-    }
-  }
-}
-
-// clear block on the field //
-void clear_block(GameInfo_t *gameInfo) {
-  for (int i = 0; i < BLOCK_SIZE; i++) {
-    for (int j = 0; j < BLOCK_SIZE; j++) {
-      if (gameInfo->block[i][j] == 1) {
-        gameInfo->field[gameInfo->block_row + i][gameInfo->block_col + j] = 0;
+      if (game->block[i][j] == 1) {
+        game->field[game->block_row + i][game->block_col + j] = 1;
       }
     }
   }
 }
 
-void move_down(GameInfo_t *gameInfo) {
+void clear_block(GameInfo_t *game) {
   for (int i = 0; i < BLOCK_SIZE; i++) {
     for (int j = 0; j < BLOCK_SIZE; j++) {
-      if (gameInfo->block[i][j] == 1) {
-        int new_row = gameInfo->block_row + i + 1;
-        int new_col = gameInfo->block_col + j;
+      if (game->block[i][j] == 1) {
+        game->field[game->block_row + i][game->block_col + j] = 0;
+      }
+    }
+  }
+}
 
-        if (new_row > HEIGHT - 1 || gameInfo->field[new_row][new_col] == 2) {
-          gameInfo->status = Sig;
+void move_down(GameInfo_t *game) {
+  for (int i = 0; i < BLOCK_SIZE; i++) {
+    for (int j = 0; j < BLOCK_SIZE; j++) {
+      if (game->block[i][j] == 1) {
+        int new_row = game->block_row + i + 1;
+        int new_col = game->block_col + j;
+        if (new_row > HEIGHT - 1 || game->field[new_row][new_col] == 2) {
+          game->status = Sig;
           return;
         }
       }
     }
   }
-
-  clear_block(gameInfo);
-  put_block(gameInfo);
-  gameInfo->block_row++;
+  clear_block(game);
+  game->block_row++;
+  place_block(game);
 }
 
-void move_left(GameInfo_t *gameInfo) {
+void move_left(GameInfo_t *game) {
   for (int i = 0; i < HEIGHT; i++) {
-    if (gameInfo->field[i][0] == 1) {
+    if (game->field[i][0] == 1) {
       return;
     }
   }
-
   for (int i = 0; i < BLOCK_SIZE; i++) {
     for (int j = 0; j < BLOCK_SIZE; j++) {
-      if (gameInfo->block[i][j] == 1) {
-        if (gameInfo->field[gameInfo->block_row + i]
-                           [gameInfo->block_col + j - 1] == 2) {
+      if (game->block[i][j] == 1) {
+        if (game->field[game->block_row + i][game->block_col + j - 1] == 2) {
           return;
         }
       }
     }
   }
-
-  clear_block(gameInfo);
-  put_block(gameInfo);
-  gameInfo->block_col--;
+  clear_block(game);
+  game->block_col--;
+  place_block(game);
 }
 
-void move_right(GameInfo_t *gameInfo) {
+void move_right(GameInfo_t *game) {
   for (int i = 0; i < HEIGHT; i++) {
-    if (gameInfo->field[i][WIDTH - 1] == 1) {
+    if (game->field[i][WIDTH - 1] == 1) {
       return;
     }
   }
-
   for (int i = 0; i < BLOCK_SIZE; i++) {
     for (int j = 0; j < BLOCK_SIZE; j++) {
-      if (gameInfo->block[i][j] == 1) {
-        if (gameInfo->field[gameInfo->block_row + i]
-                           [gameInfo->block_col + j + 1] == 2) {
+      if (game->block[i][j] == 1) {
+        if (game->field[game->block_row + i][game->block_col + j + 1] == 2) {
           return;
         }
       }
     }
   }
-
-  clear_block(gameInfo);
-  put_block(gameInfo);
-  gameInfo->block_col++;
+  clear_block(game);
+  game->block_col++;
+  place_block(game);
 }
 
-// rotation teromino //
-void rotate_tetromino(GameInfo_t *gameInfo) {
-  int tmp[BLOCK_SIZE][BLOCK_SIZE];
-
-  // copy termino //
+void rotate_figure(GameInfo_t *game) {
+  int temp[BLOCK_SIZE][BLOCK_SIZE];
   for (int i = 0; i < BLOCK_SIZE; i++) {
     for (int j = 0; j < BLOCK_SIZE; j++) {
-      tmp[i][j] = gameInfo->block[i][j];
+      temp[i][j] = game->block[i][j];
     }
   }
-
-  if (allow_rotate(gameInfo, tmp) == 0 && check_square(gameInfo)) {
-    clear_block(gameInfo);
-
-    for (int i = 0; i < BLOCK_SIZE; ++i) {
-      for (int j = 0; j < BLOCK_SIZE; ++j) {
-        gameInfo->block[i][j] = tmp[BLOCK_SIZE - j - 1][i];
+  if (allow_rotation(game, temp) == 0 && check_square(game)) {
+    clear_block(game);
+    for (int i = 0; i < BLOCK_SIZE; i++) {
+      for (int j = 0; j < BLOCK_SIZE; j++) {
+        game->block[i][j] = temp[BLOCK_SIZE - j - 1][i];
       }
     }
-
-    put_block(gameInfo);
+    place_block(game);
   }
 }
 
-int allow_rotate(GameInfo_t *gameInfo, int tmp[BLOCK_SIZE][BLOCK_SIZE]) {
-  int flag = 0;
-  int bad[BLOCK_SIZE][BLOCK_SIZE];
-  int left_idx = update_block_col_left(bad);
-  int right_idx = update_block_col_right(bad);
-
-  for (int i = 0; i < BLOCK_SIZE; i++) {
-    for (int j = 0; j < BLOCK_SIZE; j++) {
-      bad[i][j] = tmp[BLOCK_SIZE - j - 1][i];
-    }
-  }
-
-  if (gameInfo->block_col + right_idx > 7 ||
-      gameInfo->block_col - left_idx > -2) {
-    flag = 1;
-  }
-
-  for (int i = 0; i < BLOCK_SIZE; ++i) {
-    for (int j = 0; j < BLOCK_SIZE; ++j) {
-      if (bad[i][j] == 1) {
-        if (gameInfo->field[gameInfo->block_row + i][gameInfo->block_col + j] ==
-                2 ||
-            gameInfo->block_row + j + 1 > HEIGHT) {
-          flag = 1;
-        }
-      }
-    }
-  }
-  return flag;
-}
-
-int update_block_col_left(int bad[BLOCK_SIZE][BLOCK_SIZE]) {
-  int pos = 2;
-  int tmp = 6;
-
-  for (int i = 0; i < BLOCK_SIZE; i++) {
-    for (int j = 0; j < BLOCK_SIZE; j++) {
-      if (bad[i][j] == 1 && j < pos && j < tmp) {
-        tmp = j;
-      }
-    }
-  }
-
-  if (tmp == 6) {
-    return 0;
-  }
-  return pos - tmp;
-}
-
-int update_block_col_right(int bad[BLOCK_SIZE][BLOCK_SIZE]) {
-  int pos = 2;
-  int tmp = -1;
-
-  for (int i = 0; i < BLOCK_SIZE; i++) {
-    for (int j = 0; j < BLOCK_SIZE; j++) {
-      if (bad[i][j] == 1 && j > pos && j > tmp) {
-        tmp = j;
-      }
-    }
-  }
-  if (tmp == -1) {
-    return 0;
-  }
-  return tmp - pos;
-}
-
-int check_square(GameInfo_t *gameInfo) {
-  if (gameInfo->block[1][2] && gameInfo->block[2][2] && gameInfo->block[1][3] &&
-      gameInfo->block[2][3])
+int check_square(GameInfo_t *game) {
+  if (game->block[1][2] && game->block[2][2] && game->block[1][3] &&
+      game->block[2][3])
     return 0;
   return 1;
 }
 
-void freeze_block(GameInfo_t *gameInfo) {
-  for (int i = 0; i < HEIGHT; ++i) {
-    for (int j = 0; j < WIDTH; ++j) {
-      if (gameInfo->field[i][j] == 1) {
-        // 2 - freeze pixel //
-        gameInfo->field[i][j] = 2;
+void freeze_block(GameInfo_t *game) {
+  for (int i = 0; i < HEIGHT; i++) {
+    for (int j = 0; j < WIDTH; j++) {
+      if (game->field[i][j] == 1) {
+        game->field[i][j] = 2;
       }
     }
   }
 }
 
-void find_full_lines(GameInfo_t *gameInfo, int *num) {
+void find_fulls(GameInfo_t *game, int *num) {
   for (int i = HEIGHT - 1; i >= 0; i--) {
     int count = 0;
-
     for (int j = 0; j < WIDTH; j++) {
-      if (gameInfo->field[i][j] != 0) {
+      if (game->field[i][j] != 0) {
         count++;
       }
     }
-
     if (count == WIDTH) {
-      *num += 1;
-      clear_lines(gameInfo, i);
-      find_full_lines(gameInfo, num);
+      (*num) += 1;
+      clear_lines(game, i);
+      find_fulls(game, num);
     }
   }
 }
@@ -318,144 +249,174 @@ void update_score(GameInfo_t *game, int count) {
   }
 }
 
-void update_speed(GameInfo_t *gameInfo, int **speed) {
-  int current_speed = gameInfo->speed;
-  int new_speed = gameInfo->score / 600 + 1;
-
-  if (new_speed > 10) {
-    new_speed = 10;
-  }
-
-  if (new_speed > current_speed) {
-    **speed = **speed - (new_speed - current_speed) * 30;
-    gameInfo->speed = new_speed;
+void update_speed(GameInfo_t *game, int **speed) {
+  int curr_speed = game->speed;
+  int new_speed = game->score / 600 + 1;
+  if (new_speed > 10) new_speed = 10;
+  if (new_speed > curr_speed) {
+    **speed = **speed - (new_speed - curr_speed) * 30;
+    game->speed = new_speed;
   }
 }
 
-void clear_lines(GameInfo_t *gameInfo, int row_idx) {
-  for (int i = row_idx; i > 0; i--) {
+void clear_lines(GameInfo_t *game, int row_index) {
+  for (int i = row_index; i > 0; i--) {
     for (int j = 0; j < WIDTH; j++) {
-      gameInfo->field[i][j] = gameInfo->field[i - 1][j];
+      game->field[i][j] = game->field[i - 1][j];
     }
   }
-
-  for (int i = 0; i < WIDTH; i++) {
-    gameInfo->field[0][i] = 0;
+  for (int j = 0; j < WIDTH; j++) {
+    game->field[0][j] = 0;
   }
 }
 
-void check_finish(GameInfo_t *gameInfo) {
+void check_finish(GameInfo_t *game) {
   for (int i = 0; i <= 5; i++) {
     for (int j = 0; j < WIDTH; j++) {
-      if (gameInfo->field[i][j] == 2) {
-        gameInfo->status = GameOver;
+      if (game->field[i][j] == 2) {
+        game->status = GameOver;
       }
     }
   }
 }
 
-GameInfo_t update_current_state(GameInfo_t *gameInfo, int *move_interval) {
-  int count = 0;
-
-  freeze_block(gameInfo);
-  find_full_lines(gameInfo, &count);
-
-  if (count > 0) {
-    update_score(gameInfo, count);
-    update_speed(gameInfo, &move_interval);
+int allow_rotation(GameInfo_t *game, int temp[BLOCK_SIZE][BLOCK_SIZE]) {
+  int dummy[BLOCK_SIZE][BLOCK_SIZE];
+  int flag = 0;
+  for (int i = 0; i < BLOCK_SIZE; i++) {
+    for (int j = 0; j < BLOCK_SIZE; j++) {
+      dummy[i][j] = temp[BLOCK_SIZE - j - 1][i];
+    }
   }
-
-  check_finish(gameInfo);
-
-  if (gameInfo->status != GameOver) {
-    gameInfo->block_row = 0;
-    gameInfo->block_col = 2;
-    gameInfo->status = Down;
-    choice_tetromino(gameInfo);
-    put_block(gameInfo);
+  int left_idx = up_block_col_left(dummy);
+  int right_idx = up_block_col_right(dummy);
+  if (game->block_col + right_idx > 7 || game->block_col - left_idx < -2)
+    flag = 1;
+  for (int i = 0; i < BLOCK_SIZE; i++) {
+    for (int j = 0; j < BLOCK_SIZE; j++) {
+      if (dummy[i][j] == 1) {
+        if (game->field[game->block_row + i][game->block_col + j] == 2 ||
+            game->block_row + j + 1 > HEIGHT) {
+          flag = 1;
+        }
+      }
+    }
   }
-  return *gameInfo;
+  return flag;
 }
 
-void user_input(GameInfo_t *gameInfo, int hold) {
+int up_block_col_left(int dummy[BLOCK_SIZE][BLOCK_SIZE]) {
+  int pos = 2;
+  int temp = 6;
+  for (int i = 0; i < BLOCK_SIZE; i++) {
+    for (int j = 0; j < BLOCK_SIZE; j++) {
+      if (dummy[i][j] == 1 && j < pos && j < temp) {
+        temp = j;
+      }
+    }
+  }
+  if (temp == 6) return 0;
+  return pos - temp;
+}
+
+int up_block_col_right(int dummy[BLOCK_SIZE][BLOCK_SIZE]) {
+  int pos = 2;
+  int temp = -1;
+  for (int i = 0; i < BLOCK_SIZE; i++) {
+    for (int j = 0; j < BLOCK_SIZE; j++) {
+      if (dummy[i][j] == 1 && j > pos && j > temp) {
+        temp = j;
+      }
+    }
+  }
+  if (temp == -1) return 0;
+  return temp - pos;
+}
+
+GameInfo_t update_current_state(GameInfo_t *game, int *move_interval) {
+  int count = 0;
+  freeze_block(game);
+  find_fulls(game, &count);
+  if (count > 0) {
+    update_score(game, count);
+    update_speed(game, &move_interval);
+  }
+  check_finish(game);
+  if (game->status != GameOver) {
+    game->block_row = 0;
+    game->block_col = 2;
+    choose_tetromino(game);
+    place_block(game);
+    game->status = Down;
+  }
+  return *game;
+}
+
+void user_input(GameInfo_t *game, int hold) {
   switch (hold) {
     case ' ':
-      gameInfo->status = Rotation;
-      rotate_tetromino(gameInfo);
+      game->status = Rotation;
+      rotate_figure(game);
       break;
-
     case KEY_DOWN:
-      gameInfo->status = Down;
-      move_down(gameInfo);
+      game->status = Down;
+      move_down(game);
       break;
-
     case KEY_LEFT:
-      gameInfo->status = Left;
-      move_left(gameInfo);
+      game->status = Left;
+      move_left(game);
       break;
-
     case KEY_RIGHT:
-      gameInfo->status = Right;
-      move_right(gameInfo);
+      game->status = Right;
+      move_right(game);
       break;
-
     case 'q':
-      gameInfo->status = Terminate;
+      game->status = Terminate;
       break;
-
     case 'p':
-      if (gameInfo->status == Pause) {
-        gameInfo->status = Sig;
-      } else if (gameInfo->status != GameOver) {
-        gameInfo->status = Pause;
-      }
+      if (game->status == Pause) {
+        game->status = Sig;
+      } else if (game->status != GameOver)
+        game->status = Pause;
       break;
-
     default:
-      if (gameInfo->status != GameOver && gameInfo->status != Start) {
-        gameInfo->status = Down;
-      }
+      if (game->status != GameOver && game->status != Start)
+        game->status = Down;
       break;
   }
 }
 
-int tetrominos[TETROMINO_COUNT][BLOCK_SIZE][BLOCK_SIZE] = {
+const int tetromino[TETRAMINO_COUNT][BLOCK_SIZE][BLOCK_SIZE] = {
     {{0, 0, 0, 0, 0},
      {0, 1, 0, 0, 0},
      {0, 1, 1, 1, 0},
      {0, 0, 0, 0, 0},
      {0, 0, 0, 0, 0}},
-
     {{0, 0, 0, 0, 0},
      {0, 0, 0, 1, 0},
      {0, 1, 1, 1, 0},
      {0, 0, 0, 0, 0},
      {0, 0, 0, 0, 0}},
-
     {{0, 0, 0, 0, 0},
      {0, 0, 1, 0, 0},
      {0, 1, 1, 1, 0},
      {0, 0, 0, 0, 0},
      {0, 0, 0, 0, 0}},
-
     {{0, 0, 0, 0, 0},
      {0, 0, 1, 1, 0},
      {0, 0, 1, 1, 0},
      {0, 0, 0, 0, 0},
      {0, 0, 0, 0, 0}},
-
     {{0, 0, 0, 0, 0},
      {0, 0, 1, 1, 0},
      {0, 1, 1, 0, 0},
      {0, 0, 0, 0, 0},
      {0, 0, 0, 0, 0}},
-
     {{0, 0, 0, 0, 0},
      {0, 1, 1, 0, 0},
      {0, 0, 1, 1, 0},
      {0, 0, 0, 0, 0},
      {0, 0, 0, 0, 0}},
-
     {{0, 0, 1, 0, 0},
      {0, 0, 1, 0, 0},
      {0, 0, 1, 0, 0},
