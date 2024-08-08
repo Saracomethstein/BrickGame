@@ -22,30 +22,30 @@ WinStruct *init_windows() {
   if (window == NULL) {
     return NULL;
   }
-  window->field = newwin(22, 22, 2, 14);  // Main game area //
-  window->stats = newwin(6, 20, 2, 36);   // Score display //
-  window->next = newwin(7, 14, 8, 36);   // Next piece display //
-  window->help = newwin(9, 20, 15, 36);  // Help display //
+  window->field = newwin(22, 22, 2, 14);
+  window->stats = newwin(6, 20, 2, 36);
+  window->next = newwin(7, 14, 8, 36);
+  window->help = newwin(9, 20, 15, 36);
   return window;
 }
 
-void draw_board(GameInfo_t *game, WINDOW *win) {
-  box(win, 0, 0);
+void draw_board(GameInfo_t *game, WINDOW *window) {
+  box(window, 0, 0);
   for (int row = 0; row < HEIGHT; row++) {
     for (int col = 0; col < WIDTH; col++) {
       if (game->field[row][col] == 0) {
-        mvwprintw(win, row + 1, 2 * col + 1, "%c", ' ');
-        mvwprintw(win, row + 1, 2 * col + 2, "%c", ' ');
+        mvwprintw(window, row + 1, 2 * col + 1, "%c", ' ');
+        mvwprintw(window, row + 1, 2 * col + 2, "%c", ' ');
       } else if (game->field[row][col] == 1) {
-        mvwprintw(win, row + 1, 2 * col + 1, "[");
-        mvwprintw(win, row + 1, 2 * col + 2, "]");
+        mvwprintw(window, row + 1, 2 * col + 1, "[");
+        mvwprintw(window, row + 1, 2 * col + 2, "]");
       } else if (game->field[row][col] == 2) {
-        mvwprintw(win, row + 1, 2 * col + 1, "[");
-        mvwprintw(win, row + 1, 2 * col + 2, "]");
+        mvwprintw(window, row + 1, 2 * col + 1, "[");
+        mvwprintw(window, row + 1, 2 * col + 2, "]");
       }
     }
   }
-  wrefresh(win);
+  wrefresh(window);
 }
 
 void draw_stats(GameInfo_t *game, WINDOW *stats) {
@@ -61,7 +61,7 @@ void draw_stats(GameInfo_t *game, WINDOW *stats) {
 void draw_next(GameInfo_t *game, WINDOW *next) {
   werase(next);
   box(next, 0, 0);
-    wbkgd(next, COLOR_PAIR(6));
+  wbkgd(next, COLOR_PAIR(6));
   for (int row = 0; row < BLOCK_SIZE - 1; row++) {
     for (int col = 0; col < BLOCK_SIZE; col++) {
       if (game->next[row][col] == 1) {
@@ -90,22 +90,61 @@ void draw_help(WINDOW *help) {
 }
 
 void draw_pause(WinStruct *window) {
-    wbkgdset(window->field, COLOR_PAIR(4));
-    mvwprintw(window->field, 10, 8, "PAUSE");
-    wrefresh(window->field);
-    nodelay(stdscr, FALSE);
-    getch();
-    nodelay(stdscr, TRUE);
+  wbkgdset(window->field, COLOR_PAIR(4));
+  mvwprintw(window->field, 10, 8, "PAUSE");
+  wrefresh(window->field);
+  nodelay(stdscr, FALSE);
+  getch();
+  nodelay(stdscr, TRUE);
+}
+
+void draw_game_over(WinStruct *window) {
+  wbkgdset(window->field, COLOR_PAIR(4));
+  mvwprintw(window->field, 10, 8, "GAME OVER");
+  mvwprintw(window->field, 11, 1, "Press [r] to restart");
+  wrefresh(window->field);
+  nodelay(stdscr, false);
+  getch();
+  nodelay(stdscr, true);
+}
+
+void draw_hello(WinStruct *window) {
+  wbkgdset(window->field, COLOR_PAIR(4));
+  mvwprintw(window->field, 10, 8, "Hello!");
+  mvwprintw(window->field, 11, 5, "Press any key");
+  mvwprintw(window->field, 12, 6, "to continue.");
+  wrefresh(window->field);
+  nodelay(stdscr, false);
+  getch();
+  nodelay(stdscr, false);
 }
 
 // check game status for draw boards //
 void draw_frontend(GameInfo_t *game, WinStruct *window) {
+  if (game->status == Start) {
+    draw_board(game, window->field);
+    draw_stats(game, window->stats);
+    draw_next(game, window->next);
+    draw_help(window->help);
+    mvwprintw(window->field, 11, 5, "Press any key");
+    mvwprintw(window->field, 12, 6, "to continue.");
+    wrefresh(window->field);
+    int ch = getchar();
+    (void)ch;
+    nodelay(window->field, true);
+    game->status = Down;
+  }
+
   draw_board(game, window->field);
   draw_stats(game, window->stats);
   draw_next(game, window->next);
   draw_help(window->help);
 
   if (game->status == Pause) {
-      draw_pause(window);
+    draw_pause(window);
+  } else if (game->status == GameOver) {
+    draw_game_over(window);
+  } else if (game->status == Hello) {
+    draw_hello(window);
   }
 }

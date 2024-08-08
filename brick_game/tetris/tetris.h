@@ -29,6 +29,7 @@ typedef enum {
   Rotation,
   Sig,
   GameOver,
+  Hello,
 } UserAction_t;
 
 typedef struct {

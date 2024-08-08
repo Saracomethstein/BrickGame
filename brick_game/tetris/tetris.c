@@ -271,7 +271,7 @@ void clear_lines(GameInfo_t *game, int row_index) {
 }
 
 void check_finish(GameInfo_t *game) {
-  for (int i = 0; i <= 5; i++) {
+  for (int i = 0; i < 2; i++) {
     for (int j = 0; j < WIDTH; j++) {
       if (game->field[i][j] == 2) {
         game->status = GameOver;

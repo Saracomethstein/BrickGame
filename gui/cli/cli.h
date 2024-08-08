@@ -25,10 +25,11 @@ void draw_addinfo(GameInfo_t *game, WINDOW *addinfo);
 void draw_stats(GameInfo_t *game, WINDOW *stats);
 void draw_help(WINDOW *help);
 void draw_next(GameInfo_t *game, WINDOW *next);
-void draw_gameover(WinStruct *window);
+void draw_game_over(WinStruct *window);
 void draw_frontend(GameInfo_t *game, WinStruct *window);
 void draw_pause(WinStruct *window);
-void draw_pause(WinStruct *window);
+void draw_hello(WinStruct *window);
+void draw_what_next(WinStruct *window);
 WinStruct *init_windows();
 
 #endif
