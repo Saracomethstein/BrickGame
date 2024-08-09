@@ -3,6 +3,7 @@
 
 #include <ncurses.h>
 #include <signal.h>
+#include <sqlite3.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -48,6 +49,7 @@ typedef struct {
 
 void user_input(GameInfo_t *gameInfo, int hold);
 void choose_tetromino(GameInfo_t *gameInfo);
+void load_game(GameInfo_t *gameInfo);
 
 // move block //
 void move_left(GameInfo_t *gameInfo);

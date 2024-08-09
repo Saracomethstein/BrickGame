@@ -14,18 +14,22 @@ GameInfo_t *init_game() {
     game->next[i] = (int(*))calloc(BLOCK_SIZE, sizeof(int));
   }
 
+  game->status = Start;
+  load_game(game);
+
+  return game;
+}
+
+void load_game(GameInfo_t *game) {
   game->block_row = 0;
   game->block_col = 2;
   game->score = 0;
   game->speed = 1;
-  game->status = Start;
-
   choose_tetromino(game);
   place_block(game);
   load_record(game);
-
-  return game;
 }
+
 void load_record(GameInfo_t *game) {
   FILE *file = fopen("record.txt", "r");
   if (file != NULL) {

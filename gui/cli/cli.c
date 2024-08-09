@@ -49,6 +49,21 @@ void draw_board(GameInfo_t *game, WINDOW *window) {
   wrefresh(window);
 }
 
+void clear_field(GameInfo_t *game, WINDOW *window) {
+  box(window, 0, 0);
+  wbkgd(window, COLOR_PAIR(4));
+  for (int i = 0; i < HEIGHT; ++i) {
+    for (int j = 0; j < WIDTH; ++j) {
+      if (game->field[i][j] == 1 || game->field[i][j] == 2) {
+        mvwprintw(window, i + 1, 2 * j + 1, " ");
+        mvwprintw(window, i + 1, 2 * j + 2, " ");
+        game->field[i][j] = 0;  /// clear field //
+      }
+    }
+  }
+  wrefresh(window);
+}
+
 void draw_stats(GameInfo_t *game, WINDOW *stats) {
   werase(stats);
   box(stats, 0, 0);
@@ -105,8 +120,6 @@ void draw_game_over(WinStruct *window) {
   mvwprintw(window->field, 11, 1, "Press [r] to restart");
   wrefresh(window->field);
   nodelay(stdscr, false);
-  getch();
-  nodelay(stdscr, true);
 }
 
 void draw_hello(WinStruct *window) {
@@ -133,16 +146,20 @@ void draw_frontend(GameInfo_t *game, WinStruct *window) {
     game->status = Down;
   }
 
-  draw_board(game, window->field);
-  draw_stats(game, window->stats);
-  draw_next(game, window->next);
-  draw_help(window->help);
+  if (game->status == Down) {
+    draw_board(game, window->field);
+    draw_stats(game, window->stats);
+    draw_next(game, window->next);
+    draw_help(window->help);
+  }
 
   if (game->status == Pause) {
     draw_pause(window);
   } else if (game->status == GameOver) {
     draw_game_over(window);
-  } else if (game->status == Restart) {
-    draw_board(game, window->field);
+  }
+
+  if (game->status == Restart) {
+    clear_field(game, window->field);
   }
 }

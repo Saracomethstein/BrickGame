@@ -21,6 +21,12 @@ int main() {
         last_time = current_time;
       }
     }
+
+    if (game->status == Restart) {
+      draw_frontend(game, window);
+      load_game(game);
+    }
+
     if (game->status == Sig) {
       *game = update_current_state(game, &move_interval);
       if (game->score == game->high_score) {
@@ -31,9 +37,10 @@ int main() {
         int c = getch();
         if (c == 'q') {
           game->status = Terminate;
-          break;
         } else if (c == 'r') {
           game->status = Restart;
+          draw_frontend(game, window);
+          load_game(game);
         }
       }
     }

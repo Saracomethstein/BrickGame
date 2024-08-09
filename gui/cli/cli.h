@@ -30,6 +30,7 @@ void draw_frontend(GameInfo_t *game, WinStruct *window);
 void draw_pause(WinStruct *window);
 void draw_hello(WinStruct *window);
 void draw_what_next(WinStruct *window);
+void clear_field(GameInfo_t *game, WINDOW *window);
 WinStruct *init_windows();
 
 #endif
