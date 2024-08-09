@@ -263,6 +263,8 @@ void update_speed(GameInfo_t *game, int **speed) {
   }
 }
 
+void update_level(GameInfo_t *game) { game->level = game->score / 600 + 1; }
+
 void clear_lines(GameInfo_t *game, int row_index) {
   for (int i = row_index; i > 0; i--) {
     for (int j = 0; j < WIDTH; j++) {
@@ -344,6 +346,7 @@ GameInfo_t update_current_state(GameInfo_t *game, int *move_interval) {
   if (count > 0) {
     update_score(game, count);
     update_speed(game, &move_interval);
+    update_level(game);
   }
   check_finish(game);
   if (game->status != GameOver) {

@@ -64,6 +64,7 @@ void clear_lines(GameInfo_t *gameInfo, int row_index);
 
 void update_score(GameInfo_t *gameInfo, int count);
 void update_speed(GameInfo_t *gameInfo, int **speed);
+void update_level(GameInfo_t *gameInfo);
 
 // SQLite (now .txt) //
 void load_record(GameInfo_t *gameInfo);

@@ -9,13 +9,9 @@ void init_curses() {
   cbreak();
   curs_set(0);
   start_color();
-  init_pair(1, COLOR_BLACK, COLOR_WHITE);
-  init_pair(2, COLOR_RED, COLOR_GREEN);
-  init_pair(3, COLOR_RED, COLOR_BLUE);
-  init_pair(4, COLOR_WHITE, COLOR_BLACK);
-  init_pair(5, COLOR_BLACK, COLOR_WHITE);
-  init_pair(6, COLOR_YELLOW, COLOR_BLACK);
-  init_pair(7, COLOR_RED, COLOR_BLACK);
+  init_pair(1, COLOR_WHITE, COLOR_BLACK);
+  init_pair(2, COLOR_YELLOW, COLOR_BLACK);
+  init_pair(3, COLOR_RED, COLOR_BLACK);
 }
 
 WinStruct *init_windows() {
@@ -51,7 +47,7 @@ void draw_board(GameInfo_t *game, WINDOW *window) {
 
 void clear_field(GameInfo_t *game, WINDOW *window) {
   box(window, 0, 0);
-  wbkgd(window, COLOR_PAIR(4));
+  wbkgd(window, COLOR_PAIR(1));
   for (int i = 0; i < HEIGHT; ++i) {
     for (int j = 0; j < WIDTH; ++j) {
       if (game->field[i][j] != 0) {
@@ -77,7 +73,7 @@ void draw_stats(GameInfo_t *game, WINDOW *stats) {
 void draw_next(GameInfo_t *game, WINDOW *next) {
   werase(next);
   box(next, 0, 0);
-  wbkgd(next, COLOR_PAIR(6));
+  wbkgd(next, COLOR_PAIR(2));
   for (int row = 0; row < BLOCK_SIZE - 1; row++) {
     for (int col = 0; col < BLOCK_SIZE; col++) {
       if (game->next[row][col] == 1) {
@@ -95,18 +91,18 @@ void draw_next(GameInfo_t *game, WINDOW *next) {
 void draw_help(WINDOW *help) {
   werase(help);
   box(help, 0, 0);
-  mvwprintw(help, 1, 1, "Help");
-  mvwprintw(help, 2, 1, "Left:      [<]");
-  mvwprintw(help, 3, 1, "Right:     [>]");
-  mvwprintw(help, 4, 1, "Down:      [v]");
-  mvwprintw(help, 5, 1, "Rotate:    [space]");
-  mvwprintw(help, 6, 1, "Quit:      [q]");
-  mvwprintw(help, 7, 1, "Pause:     [p]");
+  mvwprintw(help, 1, 1, "Left:      [<]");
+  mvwprintw(help, 2, 1, "Right:     [>]");
+  mvwprintw(help, 3, 1, "Down:      [v]");
+  mvwprintw(help, 4, 1, "Rotate:    [space]");
+  mvwprintw(help, 5, 1, "Quit:      [q]");
+  mvwprintw(help, 6, 1, "Pause:     [p]");
+  mvwprintw(help, 7, 1, "Restart:   [r]");
   wrefresh(help);
 }
 
 void draw_pause(WinStruct *window) {
-  wbkgdset(window->field, COLOR_PAIR(4));
+  wbkgdset(window->field, COLOR_PAIR(1));
   mvwprintw(window->field, 10, 8, "PAUSE");
   wrefresh(window->field);
   nodelay(stdscr, false);
@@ -115,7 +111,7 @@ void draw_pause(WinStruct *window) {
 }
 
 void draw_game_over(WinStruct *window) {
-  wbkgdset(window->field, COLOR_PAIR(7));
+  wbkgdset(window->field, COLOR_PAIR(3));
   mvwprintw(window->field, 10, 5, "GAME OVER");
   mvwprintw(window->field, 11, 1, "Press [r] to restart");
   wrefresh(window->field);
