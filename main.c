@@ -35,12 +35,13 @@ int main() {
       if (game->status == GameOver) {
         draw_frontend(game, window);
         int c = getch();
+
         if (c == 'q') {
           game->status = Terminate;
-        } else if (c == 'r') {
+        }
+
+        if (c == 'r') {
           game->status = Restart;
-          draw_frontend(game, window);
-          load_game(game);
         }
       }
     }

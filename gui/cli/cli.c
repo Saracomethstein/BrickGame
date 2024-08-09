@@ -54,7 +54,7 @@ void clear_field(GameInfo_t *game, WINDOW *window) {
   wbkgd(window, COLOR_PAIR(4));
   for (int i = 0; i < HEIGHT; ++i) {
     for (int j = 0; j < WIDTH; ++j) {
-      if (game->field[i][j] == 1 || game->field[i][j] == 2) {
+      if (game->field[i][j] != 0) {
         mvwprintw(window, i + 1, 2 * j + 1, " ");
         mvwprintw(window, i + 1, 2 * j + 2, " ");
         game->field[i][j] = 0;  /// clear field //
@@ -109,9 +109,9 @@ void draw_pause(WinStruct *window) {
   wbkgdset(window->field, COLOR_PAIR(4));
   mvwprintw(window->field, 10, 8, "PAUSE");
   wrefresh(window->field);
-  nodelay(stdscr, FALSE);
+  nodelay(stdscr, false);
   getch();
-  nodelay(stdscr, TRUE);
+  nodelay(stdscr, true);
 }
 
 void draw_game_over(WinStruct *window) {
@@ -119,31 +119,25 @@ void draw_game_over(WinStruct *window) {
   mvwprintw(window->field, 10, 5, "GAME OVER");
   mvwprintw(window->field, 11, 1, "Press [r] to restart");
   wrefresh(window->field);
-  nodelay(stdscr, false);
 }
 
-void draw_hello(WinStruct *window) {
+void draw_hello(GameInfo_t *game, WinStruct *window) {
+  draw_board(game, window->field);
+  draw_stats(game, window->stats);
+  draw_next(game, window->next);
+  draw_help(window->help);
   mvwprintw(window->field, 10, 5, "Press any key");
   mvwprintw(window->field, 11, 6, "to continue");
   wrefresh(window->field);
-  nodelay(stdscr, false);
-  getch();
-  nodelay(stdscr, true);
+  int ch = getchar();
+  (void)ch;
+  nodelay(window->field, true);
+  game->status = Down;
 }
 
 void draw_frontend(GameInfo_t *game, WinStruct *window) {
   if (game->status == Start) {
-    draw_board(game, window->field);
-    draw_stats(game, window->stats);
-    draw_next(game, window->next);
-    draw_help(window->help);
-    mvwprintw(window->field, 10, 5, "Press any key");
-    mvwprintw(window->field, 11, 6, "to continue");
-    wrefresh(window->field);
-    int ch = getchar();
-    (void)ch;
-    nodelay(window->field, true);
-    game->status = Down;
+    draw_hello(game, window);
   }
 
   if (game->status == Down) {
@@ -155,11 +149,14 @@ void draw_frontend(GameInfo_t *game, WinStruct *window) {
 
   if (game->status == Pause) {
     draw_pause(window);
-  } else if (game->status == GameOver) {
+  }
+
+  if (game->status == GameOver) {
     draw_game_over(window);
   }
 
   if (game->status == Restart) {
     clear_field(game, window->field);
+    game->status = Down;
   }
 }
