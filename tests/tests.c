@@ -174,7 +174,7 @@ Suite *brick_game_tests() {
   tcase_add_test(tetris_tests, move_left_test);
   tcase_add_test(tetris_tests, move_down_test);
   tcase_add_test(tetris_tests, rotate_figure_test);
-  
+
   suite_add_tcase(tetris, tetris_tests);
   return tetris;
 }
