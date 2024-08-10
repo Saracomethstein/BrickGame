@@ -163,7 +163,6 @@ END_TEST
 Suite *brick_game_tests() {
   Suite *tetris = suite_create("tetris");
   TCase *tetris_tests = tcase_create("TETRIS");
-
   tcase_add_test(tetris_tests, init_game_test);
   tcase_add_test(tetris_tests, load_game_test);
   tcase_add_test(tetris_tests, free_game_test);
@@ -174,7 +173,6 @@ Suite *brick_game_tests() {
   tcase_add_test(tetris_tests, move_left_test);
   tcase_add_test(tetris_tests, move_down_test);
   tcase_add_test(tetris_tests, rotate_figure_test);
-
   suite_add_tcase(tetris, tetris_tests);
   return tetris;
 }
