@@ -1,12 +1,22 @@
+#FLAGS
+CC = gcc
+FLAGS = -Wall -Wextra -Werror --std=c11
+TEST_FLAGS = -fprofile-arcs -ftest-coverage
+
+
+#FILES
 GAME_FILES = brick_game/tetris/*.c brick_game/tetris/*.h
 GUI_FILES = gui/cli/*.c gui/cli/*.h
 MAIN_FILE = main.c
 TESTS_FILE = tests/tests.c
-TEST_FLAGS = -fprofile-arcs -ftest-coverage
 GCNO_FILES = ./*.gcno
 
+
+
+all: build
+
 build:
-	gcc -o tetris main.c $(GAME_FILES) $(GUI_FILES) -lncurses
+	$(CC) -o tetris main.c $(FLAGS) $(GAME_FILES) $(GUI_FILES) -lncurses
 	./tetris
 
 test:

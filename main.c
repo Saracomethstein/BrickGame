@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 199309L
 #include "brick_game/tetris/tetris.h"
 #include "gui/cli/cli.h"
 
