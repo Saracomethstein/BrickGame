@@ -157,6 +157,28 @@ START_TEST(rotate_figure_test) {
   }
 
   ck_assert_int_eq(true, answer);
+  free_game(game);
+}
+END_TEST
+
+START_TEST(update_score_test) {
+    GameInfo_t *game = init_game();
+    update_score(game, 1);
+    ck_assert_int_eq(game->score, 100);
+    game->scrore = 0;
+
+    update_score(game, 2);
+    ck_assert_int_eq(game->score, 300);
+    game->scrore = 0;
+
+    update_score(game, 3);
+    ck_assert_int_eq(game->scrore, 700);
+    game->scrore = 0;
+
+    update_score(game, 4);
+    ck_assert_int_eq(game->score = 1500);
+    game->score = 0;
+    free_game(game);
 }
 END_TEST
 
