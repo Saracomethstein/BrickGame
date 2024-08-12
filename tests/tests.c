@@ -31,16 +31,6 @@ START_TEST(load_game_test) {
 }
 END_TEST
 
-START_TEST(free_game_test) {
-  GameInfo_t *game = init_game();
-  bool answer = false;
-  free_game(game);
-  if (game == NULL) {
-    ck_assert_int_eq(true, answer);
-  }
-}
-END_TEST
-
 START_TEST(choice_tetromino_test) {
   GameInfo_t *game = init_game();
   bool answer = false;
@@ -132,6 +122,10 @@ START_TEST(move_down_test) {
   int new_row = game->block_row + 1;
   move_down(game);
   ck_assert_int_eq(new_row, game->block_row);
+
+  game->block_row = 18;
+  move_down(game);
+  ck_assert_int_eq(game->status, Sig);
   free_game(game);
 }
 END_TEST
@@ -191,7 +185,7 @@ START_TEST(update_current_test) {
     for (size_t j = 0; j < WIDTH; j++) {
       game->field[i][j] = 1;
     }
-  } 
+  }
 
   *game = update_current_state(game, &move_interval);
 
@@ -206,12 +200,12 @@ START_TEST(update_current_test) {
 }
 END_TEST
 
-START_TEST(user_input_test){
+START_TEST(user_input_test) {
   GameInfo_t *game = init_game();
 
   user_input(game, 'q');
   ck_assert_int_eq(game->status, Terminate);
-  
+
   user_input(game, 'r');
   ck_assert_int_eq(game->status, Restart);
 
@@ -226,13 +220,56 @@ START_TEST(user_input_test){
 }
 END_TEST
 
+START_TEST(record_test) {
+  GameInfo_t *game = init_game();
+
+  game->high_score = 1000;
+  write_record(game);
+  load_record(game);
+
+  ck_assert_int_eq(game->high_score, 1000);
+  free_game(game);
+}
+END_TEST
+
+START_TEST(check_finish_test) {
+  GameInfo_t *game = init_game();
+  game->field[1][1] = 2;
+
+  check_finish(game);
+  ck_assert_int_eq(game->status, GameOver);
+  free_game(game);
+}
+END_TEST
+
+START_TEST(allow_rotation_test) {
+  GameInfo_t *game = init_game();
+  int answer = 0;
+
+  for (int i = 0; i < BLOCK_SIZE; ++i) {
+    for (int j = 0; j < BLOCK_SIZE; ++j) {
+      game->block[i][j] = tetromino[6][i][j];
+    }
+  }
+  game->block_col = 14;
+  answer = allow_rotation(game, game->block);
+  ck_assert_int_eq(answer, 1);
+
+  game->block_col = 0;
+  game->block_row = 16;
+  answer = 0;
+  answer = allow_rotation(game, game->block);
+  ck_assert_int_eq(answer, 1);
+  free_game(game);
+}
+END_TEST
+
 Suite *brick_game_tests() {
   Suite *tetris = suite_create("tetris");
   TCase *tetris_tests = tcase_create("TETRIS");
 
   tcase_add_test(tetris_tests, init_game_test);
   tcase_add_test(tetris_tests, load_game_test);
-  tcase_add_test(tetris_tests, free_game_test);
   tcase_add_test(tetris_tests, choice_tetromino_test);
   tcase_add_test(tetris_tests, place_block_test);
   tcase_add_test(tetris_tests, clear_block_test);
@@ -243,6 +280,9 @@ Suite *brick_game_tests() {
   tcase_add_test(tetris_tests, update_score_test);
   tcase_add_test(tetris_tests, update_current_test);
   tcase_add_test(tetris_tests, user_input_test);
+  tcase_add_test(tetris_tests, record_test);
+  tcase_add_test(tetris_tests, check_finish_test);
+  tcase_add_test(tetris_tests, allow_rotation_test);
 
   suite_add_tcase(tetris, tetris_tests);
   return tetris;
