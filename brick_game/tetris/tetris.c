@@ -147,40 +147,53 @@ void move_down(GameInfo_t *game) {
 }
 
 void move_left(GameInfo_t *game) {
+  int flag = 0;
   for (int i = 0; i < HEIGHT; i++) {
     if (game->field[i][0] == 1) {
-      return;
+      flag = 1;
     }
   }
+
   for (int i = 0; i < BLOCK_SIZE; i++) {
     for (int j = 0; j < BLOCK_SIZE; j++) {
       if (game->block[i][j] == 1) {
         if (game->field[game->block_row + i][game->block_col + j - 1] == 2) {
-          return;
+          flag = 1;
         }
       }
     }
   }
+
+  if (flag == 1) {
+    return;
+  }
+
   clear_block(game);
   game->block_col--;
   place_block(game);
 }
 
 void move_right(GameInfo_t *game) {
+  int flag = 0;
   for (int i = 0; i < HEIGHT; i++) {
     if (game->field[i][WIDTH - 1] == 1) {
-      return;
+      flag = 1;
     }
   }
   for (int i = 0; i < BLOCK_SIZE; i++) {
     for (int j = 0; j < BLOCK_SIZE; j++) {
       if (game->block[i][j] == 1) {
         if (game->field[game->block_row + i][game->block_col + j + 1] == 2) {
-          return;
+          flag = 1;
         }
       }
     }
   }
+
+  if (flag == 1) {
+    return;
+  }
+
   clear_block(game);
   game->block_col++;
   place_block(game);

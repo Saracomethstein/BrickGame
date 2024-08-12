@@ -104,6 +104,18 @@ START_TEST(move_right_test) {
   int new_col = game->block_col + 1;
   move_right(game);
   ck_assert_int_eq(new_col, game->block_col);
+
+  game->field[1][9] = 1;
+  move_right(game);
+  ck_assert_int_eq(new_col, game->block_col);
+
+  game->field[1][9] = 0;
+  game->field[18][8] = 2;
+  game->block_row = 16;
+  game->block_col = 5;
+  move_right(game);
+  ck_assert_int_eq(5, game->block_col);
+
   free_game(game);
 }
 END_TEST
@@ -113,6 +125,17 @@ START_TEST(move_left_test) {
   int new_col = game->block_col - 1;
   move_left(game);
   ck_assert_int_eq(new_col, game->block_col);
+
+  game->field[1][0] = 1;
+  move_left(game);
+  ck_assert_int_eq(new_col, game->block_col);
+
+  game->field[1][0] = 0;
+  game->field[18][8] = 2;
+  game->block_row = 16;
+  game->block_col = 6;
+  move_left(game);
+  ck_assert_int_eq(6, game->block_col);
   free_game(game);
 }
 END_TEST
@@ -264,6 +287,20 @@ START_TEST(allow_rotation_test) {
 }
 END_TEST
 
+START_TEST(check_square_test){
+  GameInfo_t *game = init_game();
+  
+  game->block[1][2] = 1;
+  game->block[2][2] = 1;
+  game->block[1][3] = 1;
+  game->block[2][3] = 1;
+
+  ck_assert_int_eq(check_square(game), 0);
+
+  free_game(game);
+}
+END_TEST
+
 Suite *brick_game_tests() {
   Suite *tetris = suite_create("tetris");
   TCase *tetris_tests = tcase_create("TETRIS");
@@ -283,6 +320,7 @@ Suite *brick_game_tests() {
   tcase_add_test(tetris_tests, record_test);
   tcase_add_test(tetris_tests, check_finish_test);
   tcase_add_test(tetris_tests, allow_rotation_test);
+  tcase_add_test(tetris_tests, check_square_test);
 
   suite_add_tcase(tetris, tetris_tests);
   return tetris;
