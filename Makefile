@@ -15,9 +15,9 @@ SRCS = $(wildcard brick_game/tetris/*.c tests/*.c)
 OBJS = $(SRCS:.c=.o)
 
 
-all: run
+all: install run
 
-run: install
+run:
 	@echo "==> Running the application..."
 	@./build/tetris
 
@@ -33,6 +33,9 @@ uninstall:
 	@echo "==> Done."
 
 dvi:
+	@echo "==> Open documentation..."
+	@ #open ./docs/documentation.html
+	@cmd.exe /C start ./docs/documentation.html
 
 dist: clean
 	@tar -czvf tetris.tar.gz . makefile
@@ -47,7 +50,7 @@ gcov_report: test
 	@gcov $(GCNO_FILES) -m
 	@lcov -t "gcov_report" -o gcov_report.info -c -d .
 	@genhtml -o ./ gcov_report.info
-	# @open ./index-sort-f.html # for macOS
+	@ #open ./index-sort-f.html # for macOS
 	@cmd.exe /C start ./index-sort-f.html # for windows
 
 clean:

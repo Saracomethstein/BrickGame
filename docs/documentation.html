@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrickGame Documentation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+        }
+        nav {
+            background: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        nav a {
+            color: #fff;
+            padding: 14px 20px;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+        section {
+            padding: 20px;
+            margin: 20px 0;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>BrickGame Documentation</h1>
+    <p>Comprehensive Guide and Reference</p>
+</header>
+
+<div class="container">
+    <nav>
+        <a href="#intro">Introduction</a>
+        <a href="#setup">Setup & Launch</a>
+        <a href="#architecture">Game Architecture</a>
+        <a href="#code">Code Overview</a>
+        <a href="#userguide">User Guide</a>
+        <a href="#additional">Additional Information</a>
+    </nav>
+
+    <section id="intro">
+        <h2>Introduction</h2>
+        <p>This game, developed in C, is a classic brick game where the objective is to clear rows of bricks by controlling a falling block.</p>
+        <h3>Key Features:</h3>
+        <ul>
+            <li>Interactive terminal interface using ncurses</li>
+            <li>Score tracking and high score saving</li>
+            <li>Various levels of difficulty</li>
+        </ul>
+    </section>
+
+    <section id="setup">
+        <h2>Setup & Launch</h2>
+        <h3>Dependencies:</h3>
+        <p>This game requires the following libraries:</p>
+        <ul>
+            <li>ncurses</li>
+        </ul>
+        <h3>Compilation:</h3>
+        <p>To install the game, use the following command:</p>
+        <pre><code># make install</code></pre>
+        <h3>Running the Game:</h3>
+        <p>Once compiled, you can run the game with:</p>
+        <pre><code># make run</code></pre>
+    </section>
+
+    <section id="architecture">
+        <h2>Game Architecture</h2>
+        <p>The game is built around a central loop that handles game state updates, rendering, and user input.</p>
+        <h3>Main Components:</h3>
+        <ul>
+            <li><strong>GameInfo_t</strong>: Structure holding game state</li>
+            <li><strong>WinStruct</strong>: Structure for window management</li>
+            <li><strong>ncurses</strong>: Library for terminal UI</li>
+        </ul>
+    </section>
+
+    <section id="userguide">
+        <h2>User Guide</h2>
+        <h3>Controls:</h3>
+        <ul>
+            <li><strong>Arrow Keys:</strong> Move block left, right or down</li>
+            <li><strong>Spacebar:</strong> Rotate block</li>
+            <li><strong>q:</strong> Quit game</li>
+            <li><strong>r:</strong> Restart game</li>
+            <li><strong>p:</strong> Pause game</li>
+        </ul>
+        <h3>Objective:</h3>
+        <p>Clear rows of bricks by strategically placing blocks.</p>
+    </section>
+
+    <section id="additional">
+        <h2>Additional Information</h2>
+        <h3>Bugs & Troubleshooting:</h3>
+        <p>Known issues include potential crashes on terminal resize. To resolve, avoid resizing the terminal during play.</p>
+    </section>
+</div>
+
+<footer>
+    <p>BrickGame &copy; 2024. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
