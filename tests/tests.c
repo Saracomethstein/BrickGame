@@ -287,9 +287,9 @@ START_TEST(allow_rotation_test) {
 }
 END_TEST
 
-START_TEST(check_square_test){
+START_TEST(check_square_test) {
   GameInfo_t *game = init_game();
-  
+
   game->block[1][2] = 1;
   game->block[2][2] = 1;
   game->block[1][3] = 1;
