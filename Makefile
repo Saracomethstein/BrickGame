@@ -1,7 +1,7 @@
 #FLAGS
 CC = gcc
 FLAGS = -Wall -Wextra -Werror --std=c11
-TEST_FLAGS = -fprofile-arcs -ftest-coverage
+TEST_FLAGS = --coverage -lcheck -lsubunit -lm
 
 
 #FILES
@@ -11,26 +11,29 @@ MAIN_FILE = main.c
 TESTS_FILE = tests/tests.c
 GCNO_FILES = ./*.gcno
 
+SRCS = $(wildcard brick_game/tetris/*.c tests/*.c)
+OBJS = $(SRCS:.c=.o)
 
 
-all: build
+all: install
 
-build:
+install:
 	$(CC) -o tetris main.c $(FLAGS) $(GAME_FILES) $(GUI_FILES) -lncurses
 	./tetris
 
-test:
-	gcc -o tetris_test $(TEST_FLAGS) `pkg-config --cflags --libs check` $(TESTS_FILE) $(GAME_FILES)
+test: $(SRCS)
+	$(CC) -o tetris_test $(SRCS) $(TEST_FLAGS) `pkg-config --cflags --libs check`
 	./tetris_test
 
 gcov_report: test
 	gcov $(GCNO_FILES) -m
 	lcov -t "gcov_report" -o gcov_report.info -c -d .
 	genhtml -o ./ gcov_report.info
-	open ./index-sort-f.html
+	# open ./index-sort-f.html # for macOS
+	cmd.exe /C start ./index-sort-f.html # for windows
 
 clean:
-	rm -r tetris tetris_test *.gcno *.gcda *.gcov
+	rm -rf tetris tetris_test *.gcno *.gcda *.gcov *.png *.info *.html *.css tests/*.html brick_game/tetris/*.html
 
 clang:
 	@clang-format --style=Google -n	$(GAME_FILES) $(GUI_FILES) $(MAIN_FILE) $(TESTS_FILE)
