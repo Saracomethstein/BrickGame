@@ -1,4 +1,5 @@
 #include <check.h>
+#include <stdio.h>
 
 #include "../brick_game/tetris/tetris.h"
 
@@ -182,9 +183,53 @@ START_TEST(update_score_test) {
 }
 END_TEST
 
+START_TEST(update_current_test) {
+  GameInfo_t *game = init_game();
+  int move_interval = 400;
+
+  for (size_t i = 0; i < 4; i++) {
+    for (size_t j = 0; j < WIDTH; j++) {
+      game->field[i][j] = 1;
+    }
+  } 
+
+  *game = update_current_state(game, &move_interval);
+
+  ck_assert_int_eq(game->score, 1500);
+  ck_assert_int_eq(game->speed, 3);
+  ck_assert_int_eq(game->level, 3);
+  ck_assert_int_eq(game->block_row, 0);
+  ck_assert_int_eq(game->block_col, 2);
+  ck_assert_int_eq(game->status, Down);
+
+  free_game(game);
+}
+END_TEST
+
+START_TEST(user_input_test){
+  GameInfo_t *game = init_game();
+
+  user_input(game, 'q');
+  ck_assert_int_eq(game->status, Terminate);
+  
+  user_input(game, 'r');
+  ck_assert_int_eq(game->status, Restart);
+
+  user_input(game, 0);
+  ck_assert_int_eq(game->status, Down);
+
+  game->status = Pause;
+  user_input(game, 'p');
+  ck_assert_int_eq(game->status, Sig);
+
+  free_game(game);
+}
+END_TEST
+
 Suite *brick_game_tests() {
   Suite *tetris = suite_create("tetris");
   TCase *tetris_tests = tcase_create("TETRIS");
+
   tcase_add_test(tetris_tests, init_game_test);
   tcase_add_test(tetris_tests, load_game_test);
   tcase_add_test(tetris_tests, free_game_test);
@@ -195,6 +240,10 @@ Suite *brick_game_tests() {
   tcase_add_test(tetris_tests, move_left_test);
   tcase_add_test(tetris_tests, move_down_test);
   tcase_add_test(tetris_tests, rotate_figure_test);
+  tcase_add_test(tetris_tests, update_score_test);
+  tcase_add_test(tetris_tests, update_current_test);
+  tcase_add_test(tetris_tests, user_input_test);
+
   suite_add_tcase(tetris, tetris_tests);
   return tetris;
 }
