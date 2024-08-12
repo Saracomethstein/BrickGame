@@ -9,35 +9,57 @@ GAME_FILES = brick_game/tetris/*.c brick_game/tetris/*.h
 GUI_FILES = gui/cli/*.c gui/cli/*.h
 MAIN_FILE = main.c
 TESTS_FILE = tests/tests.c
-GCNO_FILES = ./*.gcno
+GCNO_FILES = ./tests/*.gcno
 
 SRCS = $(wildcard brick_game/tetris/*.c tests/*.c)
 OBJS = $(SRCS:.c=.o)
 
 
-all: install
+all: run
+
+run: install
+	@echo "==> Running the application..."
+	@./build/tetris
 
 install:
-	$(CC) -o tetris main.c $(FLAGS) $(GAME_FILES) $(GUI_FILES) -lncurses
-	./tetris
+	@echo "==> Install the application..."
+	@mkdir build
+	@$(CC) -o build/tetris main.c $(FLAGS) $(GAME_FILES) $(GUI_FILES) -lncurses
+	@echo "==> Done."
+
+uninstall:
+	@echo "==> Uninstall the application..."
+	@rm -rf build
+	@echo "==> Done."
+
+dvi:
+
+dist: clean
+	@tar -czvf tetris.tar.gz . makefile
 
 test: $(SRCS)
-	$(CC) -o tetris_test $(SRCS) $(TEST_FLAGS) `pkg-config --cflags --libs check`
-	./tetris_test
+	@echo "==> Test the application..."
+	@$(CC) -o tests/tetris_test $(SRCS) $(TEST_FLAGS) `pkg-config --cflags --libs check`
+	@./tests/tetris_test
 
 gcov_report: test
-	gcov $(GCNO_FILES) -m
-	lcov -t "gcov_report" -o gcov_report.info -c -d .
-	genhtml -o ./ gcov_report.info
-	# open ./index-sort-f.html # for macOS
-	cmd.exe /C start ./index-sort-f.html # for windows
+	@echo "==> Generate test report..."
+	@gcov $(GCNO_FILES) -m
+	@lcov -t "gcov_report" -o gcov_report.info -c -d .
+	@genhtml -o ./ gcov_report.info
+	# @open ./index-sort-f.html # for macOS
+	@cmd.exe /C start ./index-sort-f.html # for windows
 
 clean:
-	rm -rf tetris tetris_test *.gcno *.gcda *.gcov *.png *.info *.html *.css tests/*.html brick_game/tetris/*.html
+	@echo "==> Cleaning up..."
+	@rm -rf build tetris tetris_test *.gcno *.gcda *.gcov *.png *.info *.html *.css tests/*.html brick_game/tetris/*.html tetris.tar.gz
+	@rm -rf tests/*.gcno tests/*.gcda tests/tetris_test
 
 clang:
+	@echo "==> Check Google style..."
 	@clang-format --style=Google -n	$(GAME_FILES) $(GUI_FILES) $(MAIN_FILE) $(TESTS_FILE)
 
 style:
+	@echo "==> Set Google style..."
 	@clang-format --style=Google -i $(GAME_FILES) $(GUI_FILES) $(MAIN_FILE) $(TESTS_FILE)
 
