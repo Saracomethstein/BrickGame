@@ -15,8 +15,8 @@
 
 To run this game, you will need:
 
-- A C compiler (like `gcc`)
-- A terminal emulator that supports ncurses (Linux or macOS)
+- Compiler `gcc`.
+- Lib`ncurses` for gui.
 
 ### Installation
 
