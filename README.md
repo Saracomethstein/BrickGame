@@ -1,3 +1,5 @@
+![tetris](docs/tetris.png)
+
 ## Brick Game (Implementation on C)
 
 **BrickGame** is a simple yet engaging implementation of a classic block-based game, written in C. This game offers a nostalgic experience similar to the traditional handheld brick games that many of us enjoyed during our childhood. It features smooth gameplay, basic graphics, and a challenge that increases as you progress.
