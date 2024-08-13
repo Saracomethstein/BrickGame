@@ -73,8 +73,7 @@ void free_game(GameInfo_t *game) {
 
 void choose_tetromino(GameInfo_t *game) {
   int flag = 0;
-
-  // check zero block //
+  
   for (int i = 0; i < BLOCK_SIZE; i++) {
     for (int j = 0; j < BLOCK_SIZE; j++) {
       if (game->next[i][j] != 0) {
@@ -84,7 +83,6 @@ void choose_tetromino(GameInfo_t *game) {
     }
   }
 
-  // random tetromino //
   int block_id = rand() % 7;
   int next_id = rand() % 7;
 

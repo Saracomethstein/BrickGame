@@ -53,7 +53,7 @@ void clear_field(GameInfo_t *game, WINDOW *window) {
       if (game->field[i][j] != 0) {
         mvwprintw(window, i + 1, 2 * j + 1, " ");
         mvwprintw(window, i + 1, 2 * j + 2, " ");
-        game->field[i][j] = 0;  /// clear field //
+        game->field[i][j] = 0;
       }
     }
   }

@@ -50,12 +50,11 @@ void user_input(GameInfo_t *gameInfo, int hold);
 void choose_tetromino(GameInfo_t *gameInfo);
 void load_game(GameInfo_t *gameInfo);
 
-// move block //
+
 void move_left(GameInfo_t *gameInfo);
 void move_right(GameInfo_t *gameInfo);
 void move_down(GameInfo_t *gameInfo);
 
-// block func //
 void clear_block(GameInfo_t *gameInfo);
 void place_block(GameInfo_t *gameInfo);
 void freeze_block(GameInfo_t *gameInfo);
@@ -65,7 +64,6 @@ void update_score(GameInfo_t *gameInfo, int count);
 void update_speed(GameInfo_t *gameInfo, int **speed);
 void update_level(GameInfo_t *gameInfo);
 
-// SQLite (now .txt) //
 void load_record(GameInfo_t *gameInfo);
 void write_record(GameInfo_t *gameInfo);
 
@@ -75,7 +73,6 @@ void find_fulls(GameInfo_t *gameInfo, int *count);
 void check_finish(GameInfo_t *gameInfo);
 int check_square(GameInfo_t *gameInfo);
 
-// rotation //
 void rotate_figure(GameInfo_t *gameInfo);
 int up_block_col_left(int block[BLOCK_SIZE][BLOCK_SIZE]);
 int up_block_col_right(int block[BLOCK_SIZE][BLOCK_SIZE]);
